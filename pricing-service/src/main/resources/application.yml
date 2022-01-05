@@ -1,0 +1,66 @@
+spring:
+  profiles:
+    active: DEV
+    
+---
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+        jdbc:
+          lob:
+            non_contextual_creation: 'true'
+    hibernate:
+      ddl-auto: update
+    show-sql: 'true'
+  application:
+    name: pricing-service
+  config:
+    activate:
+      on-profile: DEV
+  datasource:
+    password: admin
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    url: jdbc:mysql://localhost:3306/product_microservices?useSSL=false
+  sql:
+    init:
+      mode: never
+server:
+  servlet:
+    context-path: /pricing-service
+  port: '8002'
+  
+  
+---
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+        jdbc:
+          lob:
+            non_contextual_creation: 'true'
+    hibernate:
+      ddl-auto: update
+    show-sql: 'true'
+  application:
+    name: pricing-service
+  config:
+    activate:
+      on-profile: PROD
+  datasource:
+    password: admin
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    url: jdbc:mysql://localhost:3306/product_microservices_prod?useSSL=false
+  sql:
+    init:
+      mode: never
+server:
+  servlet:
+    context-path: /pricing-service
+  port: '9002'

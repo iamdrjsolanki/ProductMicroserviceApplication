@@ -1,37 +1,38 @@
 package com.inventoryservice.start.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import com.inventoryservice.start.exception.InventoryNotFoundException;
 import com.inventoryservice.start.model.Inventory;
+import com.inventoryservice.start.repository.InventoryRepository;
 
 import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class InventoryService {
 	
-	List<Inventory> inventoryList = new ArrayList<Inventory>();
+	private final InventoryRepository inventoryRepo;
 	
-	public Inventory getInventoryInfo(Long productId) {
-		populateInventoryList();
-		
-		for(Inventory i : inventoryList) {
-			if(productId.equals(i.getProductId()))
-				return i;
-		}
-		
-		return null;
+	public List<Inventory> getAllInventory() {
+		return inventoryRepo.findAll();
 	}
 
-	private void populateInventoryList() {
-		inventoryList.add(new Inventory(01L, 1001L, false));
-		inventoryList.add(new Inventory(02L, 1002L, true));
-		inventoryList.add(new Inventory(03L, 1003L, false));
-		inventoryList.add(new Inventory(04L, 1004L, true));
-		inventoryList.add(new Inventory(05L, 1005L, true));
+	public Inventory addInventory(Inventory inventory) {
+		return inventoryRepo.save(inventory);
+	}
+	
+	public Inventory getInventoryInfo(Long productId) throws InventoryNotFoundException {
+		Optional<Inventory> inventory = inventoryRepo.findByProductId(productId);
+		if(!inventory.isPresent())
+			throw new InventoryNotFoundException("Inventory not found for product Id: " + productId);
+		return inventory.get();
 	}
 
 }

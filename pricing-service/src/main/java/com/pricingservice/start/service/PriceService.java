@@ -1,37 +1,35 @@
 package com.pricingservice.start.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.pricingservice.start.exception.PriceNotFoundException;
 import com.pricingservice.start.model.Price;
+import com.pricingservice.start.repository.PriceRepository;
 
 import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
 public class PriceService {
+
+	private final PriceRepository priceRepo;
 	
-	List<Price> priceList = new ArrayList<Price>();
-	
-	public Price getPriceInfo(Long productId) {
-		populatePriceList();
-		
-		for(Price p : priceList) {
-			if(productId.equals(p.getProductId()))
-				return p;
-		}
-		
-		return null;
+	public List<Price> getAllPrices() {
+		return priceRepo.findAll();
 	}
 
-	private void populatePriceList() {
-		priceList.add(new Price(101L, 1001L, 999, 899));
-		priceList.add(new Price(102L, 1002L, 899, 799));
-		priceList.add(new Price(103L, 1003L, 299, 199));
-		priceList.add(new Price(104L, 1004L, 699, 599));
-		priceList.add(new Price(105L, 1005L, 599, 499));
+	public Price addPrice(Price price) {
+		return priceRepo.save(price);
+	}
+	
+	public Price getPriceInfo(Long productId) throws PriceNotFoundException {
+		Optional<Price> price = priceRepo.findByProductId(productId);
+		if(!price.isPresent())
+			throw new PriceNotFoundException("Price not found for product Id: " + productId);
+		return price.get();
 	}
 
 }
